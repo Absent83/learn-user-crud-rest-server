@@ -1,34 +1,30 @@
 package com.myhome.springCrudRestServer.controllers;
 
-import com.myhome.springCrudRestServer.model.Role;
 import com.myhome.springCrudRestServer.model.User;
-import com.myhome.springCrudRestServer.model.dto.UserForm;
-import com.myhome.springCrudRestServer.service.RoleService;
 import com.myhome.springCrudRestServer.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 @RestController
 public class UserRestController {
 
-    @Autowired
-    UserService userService;
+    private final UserService userService;
 
     @Autowired
-    RoleService roleService;
+    public UserRestController(UserService userService) {
+        this.userService = userService;
+    }
 
 
     @GetMapping(path = "/api/users")
     public List<User> getAllUsers(@RequestParam(name = "username", required = false) String username){
 
-        List<User> users = null;
+        List<User> users;
 
         if (username == null || username.isEmpty()){
             users = userService.getAll();
@@ -42,13 +38,14 @@ public class UserRestController {
 
 
     @PostMapping(path="/api/users")
-    public ResponseEntity<?> addUser(@RequestBody UserForm userForm) {
+    public ResponseEntity<?> addUser(@RequestBody User user) {
 
-        User userNew = new User();
+        System.out.println("addUser: " + user.getId());
 
-        updateUserData(userForm, userNew);
+        //User userNew = new User();
+        //updateUserData(userForm, userNew);
 
-        userService.add(userNew);
+        userService.add(user);
 
         return ResponseEntity.ok("{\"result\" : \"ok\"}");
     }
@@ -61,15 +58,14 @@ public class UserRestController {
 
 
     @PutMapping(path = "/api/users/{user-id}")
-    public User updateUser(@PathVariable("user-id") Integer userId, @RequestBody UserForm userForm) {
+    public User updateUser(@PathVariable("user-id") Integer userId, @RequestBody User user) {
 
-        System.out.println("username: " + userForm.getUsername() + "" +
-                "firstname:" + userForm.getFirstName() + ""
+        System.out.println("username: " + user.getUsername() + "" +
+                "firstname:" + user.getFirstName() + ""
         );
 
-        User user = userService.get(userId).orElseThrow(IllegalArgumentException::new);
-
-        updateUserData(userForm, user);
+//        User user = userService.get(userId).orElseThrow(IllegalArgumentException::new);
+//        updateUserData(userForm, user);
 
         userService.update(user);
 
@@ -83,20 +79,5 @@ public class UserRestController {
         userService.delete(userId);
 
         return ResponseEntity.ok().build();
-    }
-
-
-    private void updateUserData(UserForm userForm, User user) {
-        user.setUsername(userForm.getUsername());
-        user.setFirstName(userForm.getFirstName());
-        user.setEmail(userForm.getEmail());
-        user.setPassword(userForm.getPassword());
-
-        Set<Role> roles = new HashSet<>();
-
-        for (Integer roleId : userForm.getRoles()) {
-            roles.add(roleService.get(roleId).orElseThrow(IllegalArgumentException::new));
-        }
-        user.setRoles(roles);
     }
 }
