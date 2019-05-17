@@ -39,14 +39,7 @@ public class UserRestController {
 
     @PostMapping(path="/api/users")
     public ResponseEntity<?> addUser(@RequestBody User user) {
-
-        System.out.println("addUser: " + user.getId());
-
-        //User userNew = new User();
-        //updateUserData(userForm, userNew);
-
         userService.add(user);
-
         return ResponseEntity.ok("{\"result\" : \"ok\"}");
     }
 
@@ -59,25 +52,14 @@ public class UserRestController {
 
     @PutMapping(path = "/api/users/{user-id}")
     public User updateUser(@PathVariable("user-id") Integer userId, @RequestBody User user) {
-
-        System.out.println("username: " + user.getUsername() + "" +
-                "firstname:" + user.getFirstName() + ""
-        );
-
-//        User user = userService.get(userId).orElseThrow(IllegalArgumentException::new);
-//        updateUserData(userForm, user);
-
         userService.update(user);
-
         return user;
     }
 
 
     @DeleteMapping(path = "/api/users/{user-id}")
     public ResponseEntity<Object> deleteUser(@PathVariable("user-id") Integer userId) {
-
         userService.delete(userId);
-
         return ResponseEntity.ok().build();
     }
 }

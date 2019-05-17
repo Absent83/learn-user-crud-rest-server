@@ -30,11 +30,8 @@ public class RoleRestController {
 
         if (authority == null || authority.isEmpty()) {
             roles = roleService.getAll();
-            System.out.println("getAllRoles. Count=" + roles.size());
-
         } else {
             roles = Collections.singletonList(roleService.getByAuthority(authority).orElseThrow(IllegalArgumentException::new));
-            System.out.println("getAllRoles with authority=" + authority + "; response = " + roles.get(0).getAuthority());
         }
 
         return roles;
@@ -43,9 +40,6 @@ public class RoleRestController {
 
     @GetMapping(path = "/api/roles/{role-id}")
     public Role getRole(@PathVariable("role-id") Integer roleId){
-        Role role = roleService.get(roleId).orElseThrow(IllegalArgumentException::new);
-        System.out.println("getRole by ID=" + roleId + "; response = " + role.getAuthority());
-
-        return role;
+        return roleService.get(roleId).orElseThrow(IllegalArgumentException::new);
     }
 }
