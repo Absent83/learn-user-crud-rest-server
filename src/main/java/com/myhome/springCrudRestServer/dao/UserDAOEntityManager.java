@@ -4,6 +4,7 @@ import com.myhome.springCrudRestServer.model.User;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,9 @@ public class UserDAOEntityManager implements UserDAO {
     //language=SQL
     private String SQL_GET_BY_USERNAME = "SELECT u FROM User u WHERE u.username = :username";
 
+    //language=SQL
+    private String SQL_GET_BY_EMAIL = "SELECT u FROM User u WHERE u.email = :email";
+
     @Override
     public Optional<User> get(long id) {
         return Optional.ofNullable(entityManager.find(User.class, id));
@@ -34,6 +38,21 @@ public class UserDAOEntityManager implements UserDAO {
     public Optional<User> getByUsername(String username) {
         User user = (User) entityManager.createQuery(SQL_GET_BY_USERNAME)
                 .setParameter("username", username).getSingleResult();
+
+        return Optional.ofNullable(user);
+    }
+
+
+    @Override
+    public Optional<User> getByEmail(String email) {
+        User user = null;
+
+        try {
+            user = (User) entityManager.createQuery(SQL_GET_BY_EMAIL)
+                    .setParameter("email", email).getSingleResult();
+        } catch (NoResultException nre) {
+            //Ignore this because as per logic this is ok!
+        }
 
         return Optional.ofNullable(user);
     }

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
 
 
@@ -24,22 +23,19 @@ public class RoleRestController {
 
 
     @GetMapping(path = "/api/roles")
-    public List<Role> getAllRoles(@RequestParam(name = "authority", required = false) String authority) {
+    public List<Role> getAllRoles() {
+        return roleService.getAll();
+    }
 
-        List<Role> roles;
 
-        if (authority == null || authority.isEmpty()) {
-            roles = roleService.getAll();
-        } else {
-            roles = Collections.singletonList(roleService.getByAuthority(authority).orElseThrow(IllegalArgumentException::new));
-        }
-
-        return roles;
+    @GetMapping(path = "/api/roles", params = { "authority" })
+    public Role getRoleByAuthority(@RequestParam(name = "authority", required = true) String authority) {
+        return roleService.getByAuthority(authority).orElseThrow(IllegalArgumentException::new);
     }
 
 
     @GetMapping(path = "/api/roles/{role-id}")
-    public Role getRole(@PathVariable("role-id") Integer roleId){
+    public Role getRoleById(@PathVariable("role-id") Integer roleId){
         return roleService.get(roleId).orElseThrow(IllegalArgumentException::new);
     }
 }

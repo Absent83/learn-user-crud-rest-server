@@ -40,6 +40,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<User> getByEmail(String email) {
+        return userDAO.getByEmail(email);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<User> getAll() {
         return userDAO.getAll();
